@@ -11,7 +11,7 @@ class PWMPin:
         self.pin = pin
         GPIO.setmode(GPIO.BOARD)
         GPIO.setwarnings(False)
-        GPIO.setup(pin, GPIO.IN)
+        GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         self.data = []
 
     def collect_data_point(self):
