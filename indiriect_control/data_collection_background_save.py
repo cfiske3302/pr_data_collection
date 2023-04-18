@@ -71,6 +71,8 @@ try:
             new_time = time.time_ns()
 
             if mon_parent.poll():
+                motor_output.ChangeDutyCycle(motor_input.collect_data_point() * 100)
+                servo_output.ChangeDutyCycle(servo_input.collect_data_point() * 100)
                 for i in range(lines):
                     print(LINE_UP, end=LINE_CLEAR)
                 lines = 0
