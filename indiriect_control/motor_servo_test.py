@@ -2,8 +2,8 @@ import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BOARD)
 GPIO.setwarnings(False)
-GPIO.setup(3, GPIO.OUT)
-GPIO.setup(10, GPIO.OUT)
+GPIO.setup(38, GPIO.OUT)
+GPIO.setup(40, GPIO.OUT)
 
 pwm_m = GPIO.PWM(38, 57)
 pwm_s = GPIO.PWM(40, 57)
