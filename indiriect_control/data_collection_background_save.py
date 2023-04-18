@@ -64,8 +64,8 @@ try:
         for fnum, frame in enumerate(
             camera.capture_continuous(rawCapture, format="bgr", use_video_port=True)
         ):
-            motor_input.collect_data_point()
-            # motor_output.ChangeDutyCycle(motor_input.collect_data_point() * 100)
+            # motor_input.collect_data_point()
+            motor_output.ChangeDutyCycle(motor_input.collect_data_point() * 100)
             servo_output.ChangeDutyCycle(servo_input.collect_data_point() * 100)
             video[fnum] = frame.array.astype("uint8")
             rawCapture.truncate(0)
