@@ -20,7 +20,12 @@ class PWMPin:
         while(GPIO.input(self.pin)):
             pass
         end_time = time.time_ns()
-        self.data.append(end_time-start_time)
+        
+        while(not GPIO.input(self.pin)):
+            pass
+        period_time = time.time_ns()
+        
+        self.data.append(((end_time-start_time)/(period_time-start_time), end_time-start_time, period_time-start_time))
         return self.data[-1]
 
     def collect_data_point2(self):
