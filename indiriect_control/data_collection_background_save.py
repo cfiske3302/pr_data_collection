@@ -24,6 +24,7 @@ TOTAL_FRAMES = VIDEO_LENGTH * FRAMERATE
 motor_input = PWMPin(10)
 servo_input = PWMPin(3)
 
+GPIO.setmode(GPIO.BOARD)
 GPIO.setup(38, GPIO.OUT)
 GPIO.setup(40, GPIO.OUT)
 motor_output = GPIO.PWM(38, 65)
