@@ -5,8 +5,8 @@ GPIO.setwarnings(False)
 GPIO.setup(3, GPIO.OUT)
 GPIO.setup(10, GPIO.OUT)
 
-pwm_m = GPIO.PWM(3, 57)
-pwm_s = GPIO.PWM(10, 57)
+pwm_m = GPIO.PWM(38, 57)
+pwm_s = GPIO.PWM(40, 57)
 
 motor, servo = input().split(",")
 pwm_m.start(float(motor))
