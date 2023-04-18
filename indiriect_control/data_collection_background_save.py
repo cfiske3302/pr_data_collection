@@ -25,10 +25,13 @@ motor_input = PWMPin(10)
 servo_input = PWMPin(3)
 
 GPIO.setmode(GPIO.BOARD)
+GPIO.setwarnings(False)
 GPIO.setup(38, GPIO.OUT)
 GPIO.setup(40, GPIO.OUT)
 motor_output = GPIO.PWM(38, 57)
 servo_output = GPIO.PWM(40, 57)
+motor_output.start(8)
+servo_output.start(8)
 
 camera = PiCamera()
 camera.vflip = True
@@ -61,10 +64,7 @@ try:
         for fnum, frame in enumerate(
             camera.capture_continuous(rawCapture, format="bgr", use_video_port=True)
         ):
-            m = motor_input.collect_data_point() * 100
-            print(m)
-            motor_output.ChangeDutyCycle(m)
-            # motor_input.collect_data_point()
+            motor_output.ChangeDutyCycle(motor_input.collect_data_point() * 100)
             servo_output.ChangeDutyCycle(servo_input.collect_data_point() * 100)
             video[fnum] = frame.array.astype("uint8")
             rawCapture.truncate(0)
