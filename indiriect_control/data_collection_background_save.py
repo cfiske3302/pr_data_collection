@@ -61,8 +61,9 @@ try:
         for fnum, frame in enumerate(
             camera.capture_continuous(rawCapture, format="bgr", use_video_port=True)
         ):
-            # motor_output.ChangeDutyCycle(motor_input.collect_data_point() * 100)
-            motor_input.collect_data_point()
+            m = motor_input.collect_data_point() * 100
+            motor_output.ChangeDutyCycle(m)
+            # motor_input.collect_data_point()
             servo_output.ChangeDutyCycle(servo_input.collect_data_point() * 100)
             video[fnum] = frame.array.astype("uint8")
             rawCapture.truncate(0)
@@ -80,8 +81,6 @@ try:
 
                 print(f"motor: {motor_input.data[-1]}")
                 print(f"servo: {servo_input.data[-1]}")
-
-                motor_output.ChangeDutyCycle(motor_input.data[-1] * 100)
 
                 print(f"current video progress: {fnum}/{TOTAL_FRAMES}")
                 print(
