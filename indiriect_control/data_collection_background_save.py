@@ -62,6 +62,7 @@ try:
             camera.capture_continuous(rawCapture, format="bgr", use_video_port=True)
         ):
             m = motor_input.collect_data_point() * 100
+            print(m)
             motor_output.ChangeDutyCycle(m)
             # motor_input.collect_data_point()
             servo_output.ChangeDutyCycle(servo_input.collect_data_point() * 100)
