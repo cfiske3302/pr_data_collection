@@ -17,7 +17,7 @@ from multiprocessing import Pipe, Process
 LINE_UP = '\033[1A'
 LINE_CLEAR = '\x1b[2K'
 RES = (320, 240)
-VIDEO_LENGTH = 10
+VIDEO_LENGTH = 30
 FRAMERATE = 10
 TOTAL_FRAMES = VIDEO_LENGTH * FRAMERATE
 
