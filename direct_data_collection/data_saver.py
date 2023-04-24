@@ -14,21 +14,23 @@ def save_data(pipe, address="data"):
             motor = data[1]
             servo = data[2]
             if(len(sys.argv) == 1):
-                name = address+"/driving_data_1"
-                while os.path.exists(name):
-                    name = name[:-1]+str(int(name[-1])+1)
+                name = "/driving_data_1"
+                while os.path.exists(address+name):
+                    num = name.split('_')
+                    name = name[:-1*len(num[-1])]+str(int(num[-1])+1)
             else:
-                name = f"{address}/{sys.argv[1]}"
-                while os.path.exists(name):
+                name = f"/{sys.argv[1]}"
+                while os.path.exists(address+name):
                     try:
-                        name = name[:-1]+str(int(name[-1])+1)
+                        num = name.split('_')
+                        name = name[:-1*len(num[-1])]+str(int(num[-1])+1)
                     except:
                         name = name + "_1"
-            os.mkdir(name)
+            os.mkdir(address+name)
             # np.savez_compressed(name+"/zipped_data", video=video, motor=motor.get_data(), servo=servo.get_data())
-            np.save(name+"/video", video)
-            np.save(name+"/motor", motor)
-            np.save(name+"/servo", servo)
+            np.save(address+name+"/video", video)
+            np.save(address+name+"/motor", motor)
+            np.save(address+name+"/servo", servo)
             pipe.send([f"datapoint taken : saved to {name}.npy"])
             # print(f"datapoint taken : saved to {name}.npy")
             del video

@@ -17,12 +17,12 @@ from multiprocessing import Pipe, Process
 LINE_UP = '\033[1A'
 LINE_CLEAR = '\x1b[2K'
 RES = (320, 240)
-VIDEO_LENGTH = 60
+VIDEO_LENGTH = 10
 FRAMERATE = 10
 TOTAL_FRAMES = VIDEO_LENGTH * FRAMERATE
 
-motor = PWMPin(10)
-servo = PWMPin(3)
+motor = PWMPin(13)
+servo = PWMPin(18)
 
 camera = PiCamera()
 camera.vflip = True
@@ -53,16 +53,16 @@ f_time = time.time_ns()
 try:
     while True:
         for fnum, frame in enumerate(camera.capture_continuous(rawCapture, format='bgr', use_video_port=True)):
-            motor.collect_data_point()
-            servo.collect_data_point()
+            motor.collect_data_point3()
+            servo.collect_data_point3()
             video[fnum] = frame.array.astype("uint8")
             rawCapture.truncate(0)
             new_time = time.time_ns()
             
             if(mon_parent.poll()):
-                for i in range(lines):
-                    print(LINE_UP, end=LINE_CLEAR)
-                lines = 0
+                # for i in range(lines):
+                #     print(LINE_UP, end=LINE_CLEAR)
+                # lines = 0
                 
                 if(save_parent.poll()):
                     st = save_parent.recv()

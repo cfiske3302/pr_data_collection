@@ -60,13 +60,15 @@ print("Recording Started")
 video = np.empty(shape=(TOTAL_FRAMES, RES[1], RES[0], 3), dtype="uint8")
 f_time = time.time_ns()
 servo_pos = 9.5
+motor_speed = 8
 try:
     while True:
         for fnum, frame in enumerate(
             camera.capture_continuous(rawCapture, format="bgr", use_video_port=True)
         ):
-            motor_input.collect_data_point()
-            # motor_output.ChangeDutyCycle(motor_input.collect_data_point() * 100)
+            # motor_input.collect_data_point()
+            motor_speed = .7*motor_speed + motor_input.collect_data_point()*30
+            motor_output.ChangeDutyCycle(motor_speed)
             # motor_output.ChangeDutyCycle(i%8+6)
             # i+=
             servo_input.collect_data_point()
