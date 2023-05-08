@@ -14,29 +14,37 @@ from system_monitor import monitor_system
 from data_saver import save_data
 from multiprocessing import Pipe, Process
 
-LINE_UP = '\033[1A'
-LINE_CLEAR = '\x1b[2K'
+# ANSI escape codes to clear screen
+LINE_UP = "\033[1A"
+LINE_CLEAR = "\x1b[2K"
+
+# set parameters of videos taken
 RES = (320, 240)
-VIDEO_LENGTH = 30
+VIDEO_LENGTH = 30  # in seconds
 FRAMERATE = 10
 TOTAL_FRAMES = VIDEO_LENGTH * FRAMERATE
 
+# initiale PWM pin classes and pass the pin number (using BOARD nameing convention)
 motor = PWMPin(13)
 servo = PWMPin(18)
 
+# set camera stuff
 camera = PiCamera()
-camera.vflip = True
+camera.vflip = True  # camera is upside down!
 camera.resolution = RES
 camera.framerate = FRAMERATE
 rawCapture = PiRGBArray(camera, size=RES)
 
 camera.start_preview()
 
+# create process to monitor system memory (this is probably not necessary)
 mon_parent, mon_child = Pipe()
 monitor = Process(target=monitor_system, args=(mon_child, os.getpid()), daemon=True)
 monitor.start()
 lines = 0
 
+# create process to save numpy arrays while driving
+# pass it the argument given to the program as the path to the folder to save the files
 save_parent, save_child = Pipe()
 saver = Process(target=save_data, args=(save_child,), daemon=True)
 saver.start()
@@ -52,31 +60,45 @@ video = np.empty(shape=(TOTAL_FRAMES, RES[1], RES[0], 3), dtype="uint8")
 f_time = time.time_ns()
 try:
     while True:
-        for fnum, frame in enumerate(camera.capture_continuous(rawCapture, format='bgr', use_video_port=True)):
+        for fnum, frame in enumerate(
+            camera.capture_continuous(rawCapture, format="bgr", use_video_port=True)
+        ):
+            # collect data from the servo, motor, and video and store
             motor.collect_data_point3()
             servo.collect_data_point3()
             video[fnum] = frame.array.astype("uint8")
             rawCapture.truncate(0)
             new_time = time.time_ns()
-            
-            if(mon_parent.poll()):
-                # for i in range(lines):
-                #     print(LINE_UP, end=LINE_CLEAR)
-                # lines = 0
-                
-                if(save_parent.poll()):
+
+            # If the monitor has given us an update
+            if mon_parent.poll():
+                # clear the output
+                for i in range(lines):
+                    print(LINE_UP, end=LINE_CLEAR)
+                lines = 0
+
+                # check if we have finished saving anything
+                if save_parent.poll():
                     st = save_parent.recv()
                     saves_in_progress -= 1
-                    print(st[0])
-                    
+
+                # print out an update on how much storage is left
                 print(f"current video progress: {fnum}/{TOTAL_FRAMES}")
-                print("Period: " + str((new_time-f_time)/10**9) + " expected: " + str(1/FRAMERATE))
+                print(
+                    "Period: "
+                    + str((new_time - f_time) / 10**9)
+                    + " expected: "
+                    + str(1 / FRAMERATE)
+                )
                 lines += 2
                 vitals = mon_parent.recv()
                 mem_perc = vitals[0]
                 storage = vitals[1]
-                print(f"storage: {round(storage/1048576, 2)}MB \npercent memory used: {round(mem_perc,2)}")
+                print(
+                    f"storage: {round(storage/1048576, 2)}MB \npercent memory used: {round(mem_perc,2)}"
+                )
                 lines += 2
+                # if storage is low then close the program
                 if storage < 2000000000:
                     print("Warning, low storage. finish last run")
                     lines += 1
@@ -85,12 +107,19 @@ try:
                         camera.close()
                         exit()
             f_time = new_time
-            if fnum >= TOTAL_FRAMES-1:
+
+            # if the video is finished
+            if fnum >= TOTAL_FRAMES - 1:
+                # send our saving process our data
                 save_parent.send((video, motor.get_data(), servo.get_data()))
+
+                # clear our data
                 motor.clear_data()
                 servo.clear_data()
                 saves_in_progress += 1
                 video = np.empty(shape=(TOTAL_FRAMES, RES[1], RES[0], 3), dtype="uint8")
+
+                # exit if storage is low
                 if storage < 2000000000:
                     print("Storage low, datacollection stopped")
                     while True:
@@ -118,4 +147,3 @@ except KeyboardInterrupt:
         print(LINE_UP, end=LINE_CLEAR)
     camera.close()
     exit()
-
