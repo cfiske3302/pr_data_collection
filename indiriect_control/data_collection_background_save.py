@@ -67,24 +67,14 @@ try:
             camera.capture_continuous(rawCapture, format="bgr", use_video_port=True)
         ):
             # motor_input.collect_data_point()
-<<<<<<< HEAD
-            motor_speed = .7*motor_speed + motor_input.collect_data_point()*30
-=======
             motor_speed = 0.7 * motor_speed + motor_input.collect_data_point() * 30
->>>>>>> 1dce671b441ba75853d81271872dd54453056f71
             motor_output.ChangeDutyCycle(motor_speed)
             # motor_output.ChangeDutyCycle(i%8+6)
             # i+=
             servo_input.collect_data_point()
-<<<<<<< HEAD
-            servo_pos = servo_pos*.7 + servo_input.data[-1]*30
-            servo_output.ChangeDutyCycle(servo_pos)
-            
-=======
             servo_pos = servo_pos * 0.7 + servo_input.data[-1] * 30
             servo_output.ChangeDutyCycle(servo_pos)
 
->>>>>>> 1dce671b441ba75853d81271872dd54453056f71
             video[fnum] = frame.array.astype("uint8")
             rawCapture.truncate(0)
             new_time = time.time_ns()
